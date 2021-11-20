@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "category": "all",
+      "flag": 1,
+      "selected": false
+    },
+    {
+      "category": "hutan",
+      "flag": 2,
+      "selected": false
+    },
+    {
+      "category": "air terjun",
+      "flag": 3,
+      "selected": false
+    },
+    {
+      "category": "pantai",
+      "flag": 4,
+      "selected": false
+    },
+    {
+      "category": "bukit",
+      "flag": 5,
+      "selected": false
+    },
+    {
+      "category": "spot",
+      "flag": 6,
+      "selected": false
+    },
+    {
+      "category": "keluarga",
+      "flag": 7,
+      "selected": false
+    },
+    {
+      "category": "sejarah",
+      "flag": 8,
+      "selected": false
+    },
+    {
+      "category": "danau",
+      "flag": 9,
+      "selected": false
+    },
+    {
+      "category": "food",
+      "flag": 10,
+      "selected": false
+    },
+    {
+      "category": "nongkrong",
+      "flag": 11,
+      "selected": false
+    },
+    {
+      "category": "lainnya",
+      "flag": 12,
+      "selected": false
+    }
+  ]
+}
