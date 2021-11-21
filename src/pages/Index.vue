@@ -31,8 +31,8 @@
             <q-card square flat>
               <img src="https://placeimg.com/300/300/people" />
               <q-card-section>
-                <div class="text-h6">Hutan Mangrove</div>
-                <div class="text-subtitle2">John Doe</div>
+                <div class="text-h6 text-weight-bold">Hutan Mangrove</div>
+                <div class="text-subtitle2 text-grey-5">John Doe</div>
                 <q-btn flat dense round color="negative" icon="favorite" />
                 <span class="text-grey-5"> 2k</span>
               </q-card-section>
