@@ -142,7 +142,6 @@
 
     <div class="bottom-nav">
       <q-tabs
-        dense
         v-model="tab"
         indicator-color="transparent"
         active-color="primary"
@@ -207,7 +206,7 @@
     position: fixed;
     bottom: 0;
     width: 100vw;
-    max-width: 414px;
+    max-width: 573px;
   }
 
   .q-tab-panel {

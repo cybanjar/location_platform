@@ -23,7 +23,7 @@
 <style scoped>
   .q-page-container {
     background-color: #fafafc;
-    max-width: 414px;
+    max-width: 573px;
     margin-right: auto;
     margin-left: auto;
   }
