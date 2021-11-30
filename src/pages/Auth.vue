@@ -8,20 +8,20 @@
       </div>
     </div>
     <div>
-      <div class="row justify-around bg-primary">
+      <div class="row justify-around bg-primary wrap-switch__auth">
         <div
           @click="swithLogin"
           :class="
             isLogin === true ? 'text-white text-weight-bold' : 'opacity-30'
           "
-          class="text-h5 q-py-md"
+          class="text-h5 q-py-md cursor-pointer"
         >
           Login
         </div>
         <div
           @click="swithRegister"
           :class="!isLogin ? 'text-white text-weight-bold' : 'opacity-30'"
-          class="text-h5 q-py-md"
+          class="text-h5 q-py-md cursor-pointer"
         >
           Register
         </div>
@@ -30,6 +30,7 @@
         <q-form @submit.prevent="onLogin">
           <q-input
             v-if="!isLogin"
+            :class="!isLogin ? 'q-mt-md' : ''"
             placeholder="Name"
             color="primary"
             v-model="form.name"
@@ -158,11 +159,18 @@
 
   .wrap-form {
     background-color: white;
+    margin-top: -20px;
+    border-radius: 20px;
   }
 
   .forgot-password {
     font-weight: 700;
     text-decoration: none;
     color: $primary;
+  }
+
+  .wrap-switch__auth {
+    border-radius: 20px 20px 0 0;
+    padding-bottom: 25px;
   }
 </style>

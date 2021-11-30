@@ -207,6 +207,7 @@
     position: fixed;
     bottom: 0;
     width: 100vw;
+    max-width: 414px;
   }
 
   .q-tab-panel {
