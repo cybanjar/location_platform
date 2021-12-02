@@ -91,11 +91,14 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs } from "vue";
+  import { defineComponent, reactive, toRefs, computed } from "vue";
   import { Notify } from "quasar";
+  import { useStore } from "vuex";
 
   export default defineComponent({
     setup() {
+      const store = useStore();
+
       const state = reactive({
         isLogin: true,
         form: {
@@ -120,7 +123,12 @@
         });
 
       const onLogin = () => {
-        NotifyCreate("positive", "Ok");
+        // NotifyCreate("positive", "Ok");
+        if (!state.isLogin) {
+          console.log("register!");
+        } else {
+          console.log("login");
+        }
       };
 
       return {

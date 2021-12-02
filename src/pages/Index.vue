@@ -33,8 +33,8 @@
               <q-card-section>
                 <div class="text-h6 text-weight-bold">Hutan Mangrove</div>
                 <div class="text-subtitle2 text-grey-5">John Doe</div>
-                <q-btn flat dense round color="negative" icon="favorite" />
-                <span class="text-grey-5"> 2k</span>
+                <!-- <q-btn flat dense round color="negative" icon="favorite" />
+                <span class="text-grey-5"> 2k</span> -->
               </q-card-section>
             </q-card>
           </div>
@@ -175,9 +175,10 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs } from "vue";
+  import { defineComponent, reactive, toRefs, onMounted } from "vue";
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
+  import { api } from "boot/axios";
 
   export default defineComponent({
     name: "PageIndex",
@@ -190,6 +191,19 @@
         tab: "home",
         search: "",
       });
+      function loadData() {
+        api
+          .get("post-home")
+          .then((response) => {
+            console.log("response", response);
+            // data.value = response.data;
+          })
+          .catch(() => {
+            console.log("catch");
+          });
+      }
+      loadData();
+
       return {
         ...toRefs(state),
       };
