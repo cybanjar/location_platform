@@ -1,6 +1,7 @@
 export default function () {
   return {
     isAuth: false,
-    dataUser: ['test']
+    data: ['vue', 'react'],
+    use: {}
   }
 }

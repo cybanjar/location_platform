@@ -1,2 +1,3 @@
-export function someGetter (/* state */) {
+export function todos (state, getters) {
+  return getters.data;
 }

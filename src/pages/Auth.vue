@@ -58,7 +58,7 @@
             color="primary"
             v-model="form.password"
             autocomplete="on"
-            :type="form.isPwd ? 'password' : 'text'"
+            :type="isPwd ? 'password' : 'text'"
             lazy-rules
             :rules="[
               (val) => (val && val.length > 0) || 'Please type something',
@@ -66,8 +66,8 @@
           >
             <template v-slot:append>
               <q-icon
-                @click="form.isPwd = !form.isPwd"
-                :name="form.isPwd ? 'visibility_off' : 'visibility'"
+                @click="isPwd = !isPwd"
+                :name="isPwd ? 'visibility_off' : 'visibility'"
                 color="primary"
               />
             </template>
@@ -82,6 +82,7 @@
             color="primary"
             type="submit"
             class="q-mt-md full-width text-weight-bolder q-pa-sm btn-submit"
+            :disable="form.email && form.password == ''"
             >{{ isLogin == true ? "Login" : "Register" }}</q-btn
           >
         </q-form>
@@ -91,22 +92,23 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs, computed } from "vue";
-  import { Notify } from "quasar";
+  import { defineComponent, reactive, toRefs } from "vue";
   import { useStore } from "vuex";
+  import { useQuasar, Notify } from "quasar";
 
   export default defineComponent({
     setup() {
       const store = useStore();
+      const $q = useQuasar();
 
       const state = reactive({
         isLogin: true,
         form: {
-          name: "",
-          email: "",
-          password: "",
-          isPwd: true,
+          name: "admin",
+          email: "admin@gmail.com",
+          password: "12345678",
         },
+        isPwd: true,
       });
 
       const swithRegister = () => {
@@ -122,12 +124,52 @@
           message: mess,
         });
 
-      const onLogin = () => {
-        // NotifyCreate("positive", "Ok");
+      const onLogin = async () => {
         if (!state.isLogin) {
-          console.log("register!");
+          // register
+          $q.loading.show();
+          try {
+            const response = await store.dispatch("auth/register", state.form);
+
+            const res = response.data.success;
+            if (res) {
+              NotifyCreate("positive", response.data.message);
+              state.isLogin = true;
+            }
+
+            $q.loading.hide();
+          } catch (error) {
+            const res = error.response.data.success;
+            if (!res) {
+              NotifyCreate("negative", error.response.data.message);
+            }
+
+            $q.loading.hide();
+          }
         } else {
-          console.log("login");
+          // login
+          $q.loading.show();
+
+          try {
+            const response = await store.dispatch("auth/login", state.form);
+            console.log("sukses", response.data);
+            const res = response.data;
+            if (res.success === false) {
+              NotifyCreate("negative", res.message);
+              state.form.email = "";
+              state.form.password = "";
+              state.isPwd = false;
+
+              $q.loading.hide();
+            } else if (res.access_token != null) {
+              NotifyCreate("positive", "Welcome back," + res.user.name);
+
+              $q.loading.hide();
+            }
+          } catch (error) {
+            // console.log("catch", error.response);
+            $q.loading.hide();
+          }
         }
       };
 
@@ -151,7 +193,7 @@
   .wrap-header {
     display: flex;
     justify-content: center;
-    padding: 32px 0;
+    padding: 40px 0;
   }
 </style>
 

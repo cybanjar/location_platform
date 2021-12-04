@@ -84,6 +84,10 @@ module.exports = configure(function (ctx) {
         notify: {
           position: "top",
           timeout: 4000
+        },
+        loading: {
+          spinner: 'QSpinnerDots',
+          spinnerColor: 'primary'
         }
       },
 
@@ -99,7 +103,7 @@ module.exports = configure(function (ctx) {
 
       // Quasar plugins
       plugins: [
-        'Notify'
+        'Notify', 'Loading'
       ]
     },
 
