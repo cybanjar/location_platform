@@ -1,13 +1,14 @@
 <template>
   <q-page>
-    <div class="wrap-header">
-      <q-img class="logo-search" src="../assets/Search.svg" />
-      <div>
-        <div class="text-h5">Brebes Adventure</div>
-        <div class="caption">Location Object Platform</div>
-      </div>
-    </div>
     <div>
+      <div class="wrap-header">
+        <q-img class="logo-search" src="../assets/Search.svg" />
+        <div class="wrap-text">
+          <div class="text-h5">Brebes Adventure</div>
+          <div class="caption">Location Object Platform</div>
+        </div>
+      </div>
+
       <div class="row justify-around bg-primary wrap-switch__auth">
         <div
           @click="swithLogin"
@@ -73,9 +74,15 @@
             </template>
           </q-input>
           <div class="q-mb-sm">
-            <router-link class="forgot-password" to="/"
-              >Lupa password?</router-link
-            >
+            <q-btn
+              flat
+              dense
+              color="primary"
+              type="button"
+              class="text-capitalize"
+              label="Forgot Password?"
+              @click="seamless = true"
+            />
           </div>
           <q-btn
             unelevated
@@ -88,27 +95,78 @@
         </q-form>
       </div>
     </div>
+
+    <!-- Dialog Forgot Password -->
+    <q-dialog v-model="seamless" persistent position="bottom">
+      <q-card style="width: 350px">
+        <q-linear-progress :value="1" color="pink" />
+
+        <q-card-section>
+          <div class="text-h6 text-weight-bold text-primary">
+            Forgot password!
+          </div>
+          <div class="text-grey-7">Please input email for forgot password</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            type="email"
+            placeholder="Email"
+            color="primary"
+            v-model="form.email"
+            required
+            class="q-mt-md"
+            autofocus
+            @keyup.enter="onForgotPassword"
+          >
+            <template v-slot:prepend>
+              <q-icon color="primary" name="email" />
+            </template>
+          </q-input>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn
+            flat
+            label="Cancel"
+            class="text-capitalize"
+            @click="onCancelForgot"
+          />
+          <q-btn
+            unelevated
+            label="Forgot Password"
+            color="primary"
+            class="text-capitalize text-weight-bold"
+            @click="onForgotPassword"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
   import { defineComponent, reactive, toRefs } from "vue";
   import { useStore } from "vuex";
-  import { useQuasar, Notify } from "quasar";
+  import { useQuasar, Notify, BottomSheet } from "quasar";
+  import { useRouter, useRoute } from "vue-router";
 
   export default defineComponent({
     setup() {
       const store = useStore();
       const $q = useQuasar();
+      const router = useRouter();
+      const route = useRoute();
 
       const state = reactive({
         isLogin: true,
         form: {
           name: "admin",
-          email: "admin@gmail.com",
+          email: "syamsulspeedy@gmail.com",
           password: "12345678",
         },
         isPwd: true,
+        seamless: false,
       });
 
       const swithRegister = () => {
@@ -152,8 +210,8 @@
 
           try {
             const response = await store.dispatch("auth/login", state.form);
-            console.log("sukses", response.data);
             const res = response.data;
+            console.log("res", res);
             if (res.success === false) {
               NotifyCreate("negative", res.message);
               state.form.email = "";
@@ -161,8 +219,13 @@
               state.isPwd = false;
 
               $q.loading.hide();
+            } else if (res.user.created_at == null) {
+              NotifyCreate("negative", "Please verify email!");
+
+              $q.loading.hide();
             } else if (res.access_token != null) {
-              NotifyCreate("positive", "Welcome back," + res.user.name);
+              NotifyCreate("positive", "Welcome back, " + res.user.name);
+              router.replace({ name: "home" });
 
               $q.loading.hide();
             }
@@ -173,17 +236,53 @@
         }
       };
 
+      const onForgotPassword = async () => {
+        $q.loading.show();
+
+        try {
+          const res = await store.dispatch("auth/forgotPassword", state.form);
+          const responseForgot = res;
+          if (responseForgot.status === 200) {
+            NotifyCreate("positive", responseForgot.data.status);
+          }
+
+          $q.loading.hide();
+          state.seamless = false;
+        } catch (error) {
+          console.log("catch: ", error.response);
+          const resCatch = error.response;
+          if (resCatch.status === 422) {
+            NotifyCreate("negative", resCatch.data.errors.email[0]);
+          }
+
+          $q.loading.hide();
+          state.seamless = false;
+        }
+
+        $q.loading.hide();
+      };
+
+      const onCancelForgot = () => {
+        state.form.name = "";
+        state.form.email = "";
+        state.form.password = "";
+
+        state.seamless = false;
+      };
+
       return {
         ...toRefs(state),
         swithRegister,
         swithLogin,
         onLogin,
+        onForgotPassword,
+        onCancelForgot,
       };
     },
   });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .logo-search {
     width: 48px;
     height: auto;
@@ -195,9 +294,6 @@
     justify-content: center;
     padding: 40px 0;
   }
-</style>
-
-<style lang="scss" scoped>
   .opacity-30 {
     opacity: 0.3;
     color: white;

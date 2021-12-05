@@ -4,16 +4,10 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') },
-      { path: '/auth', component: () => import('pages/Auth.vue') },
-      {
-        path: '/forgot-password',
-        component: () => import('src/pages/ForgotPassword.vue')
-      },
-      {
-        path: '/reset-password',
-        component: () => import('src/pages/ResetPassword.vue')
-      },
+      { path: '', name: 'home', component: () => import('pages/Index.vue') },
+      { path: '/auth', name: 'auth', component: () => import('pages/Auth.vue') },
+      { path: '/forgot-password', name: 'forgot-password', component: () => import('src/pages/ForgotPassword.vue')},
+      { path: '/reset-password', name: 'reset-password', component: () => import('src/pages/ResetPassword.vue')},
     ]
   },
 

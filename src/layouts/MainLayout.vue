@@ -20,7 +20,7 @@
   });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .q-page-container {
     background-color: #fafafc;
     max-width: 573px;

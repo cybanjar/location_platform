@@ -134,6 +134,14 @@
                 label="Update Profile"
                 color="primary"
               />
+              <q-btn
+                flat
+                color="primary"
+                icon="logout"
+                class="full-width q-py-sm text-capitalize"
+                label="Logout"
+                @click="onLogout"
+              />
             </div>
           </div>
         </div>
@@ -179,6 +187,10 @@
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
   import { api } from "boot/axios";
+  import { Notify, SessionStorage, useQuasar } from "quasar";
+  import { useRouter, useRoute } from "vue-router";
+  import { useStore } from "vuex";
+  import { route } from "quasar/wrappers";
 
   export default defineComponent({
     name: "PageIndex",
@@ -187,25 +199,58 @@
       ImageMix,
     },
     setup() {
+      const router = useRouter();
+      const store = useStore();
+      const $q = useQuasar();
+
       const state = reactive({
-        tab: "home",
+        tab: "profile",
         search: "",
       });
+
       function loadData() {
-        api
-          .get("post-home")
-          .then((response) => {
-            console.log("response", response);
-            // data.value = response.data;
-          })
-          .catch(() => {
-            console.log("catch");
-          });
+        const getToken = SessionStorage.getItem("auth");
+        console.log("home:", getToken);
       }
       loadData();
 
+      const NotifyCreate = (type, mess) =>
+        Notify.create({
+          type: type,
+          message: mess,
+        });
+
+      const onLogout = async () => {
+        $q.loading.show();
+
+        try {
+          const res = await store.dispatch("auth/revokeToken");
+          console.log("res home: ", res);
+          const resToken = res.data;
+          if (res.status == 200) {
+            NotifyCreate("positive", res.data.message);
+            SessionStorage.remove("auth");
+            router.push({ path: "/auth" });
+          }
+
+          $q.loading.hide();
+          return false;
+        } catch (error) {
+          console.log("catch: ", error.response);
+          const resCatch = error.response;
+          if (resCatch.status == 401) {
+            NotifyCreate("negative", resCatch.data.message);
+          }
+
+          $q.loading.hide();
+        }
+
+        $q.loading.hide();
+      };
+
       return {
         ...toRefs(state),
+        onLogout,
       };
     },
   });
