@@ -208,40 +208,33 @@
         search: "",
       });
 
-      function loadData() {
-        const getToken = SessionStorage.getItem("auth");
-        console.log("home:", getToken);
-      }
-      loadData();
-
       const NotifyCreate = (type, mess) =>
         Notify.create({
           type: type,
           message: mess,
         });
 
+      function loadData() {
+        const getToken = SessionStorage.getItem("auth");
+        console.log("Token home:", getToken);
+
+        if (getToken == null) {
+          NotifyCreate("negative", "Please Login!");
+          router.push({ path: "/auth" });
+        }
+      }
+      loadData();
+
       const onLogout = async () => {
         $q.loading.show();
 
-        try {
-          const res = await store.dispatch("auth/revokeToken");
-          console.log("res home: ", res);
-          const resToken = res.data;
-          if (res.status == 200) {
-            NotifyCreate("positive", res.data.message);
-            SessionStorage.remove("auth");
-            router.push({ path: "/auth" });
-          }
-
+        const res = await store.dispatch("auth/revokeToken");
+        if (res.status == 200) {
+          NotifyCreate("positive", res.data.message);
           $q.loading.hide();
-          return false;
-        } catch (error) {
-          console.log("catch: ", error.response);
-          const resCatch = error.response;
-          if (resCatch.status == 401) {
-            NotifyCreate("negative", resCatch.data.message);
-          }
-
+          SessionStorage.remove("auth");
+          router.push({ path: "/auth" });
+        } else {
           $q.loading.hide();
         }
 

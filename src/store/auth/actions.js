@@ -53,16 +53,63 @@ export function revokeToken (context) {
   }
 
   const body = {
-    email: 'attacker@bp.id'
+    email: 'admin@adventure.id'
   }
   
-  return api.post("logout", {
+  return api.post("logout",
     body,
     config
-  })
+  )
   
   .then(function(response) {
 
     return response;
+  })
+  .catch(function(error){
+    console.log(error.response);
+
+    return error.response;
+  })
+}
+
+export function resetPassword (context, {token, email, password, password_confirmation }) {
+  return api.post('reset-password', {
+    token: token,
+    email: email,
+    password: password,
+    password_confirmation: password_confirmation,
+  })
+  .then(function(response) {
+    
+    return response;
+  })
+  .catch(function(error) {
+
+    return error.response;
+  })
+}
+
+export function verify (context, { email }) {
+  const token = SessionStorage.getItem('auth');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `${token}`
+    }
+  }
+
+  return api.post('email/verification-notification', {
+    email,
+    config
+  })
+  .then(function(response) {
+    console.log('response action: ', response);
+    
+    return response;
+  })
+  .catch(function(error){
+    console.log(error.response);
+
+    return error.response;
   })
 }

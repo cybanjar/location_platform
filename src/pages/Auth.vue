@@ -1,13 +1,7 @@
 <template>
   <q-page>
     <div>
-      <div class="wrap-header">
-        <q-img class="logo-search" src="../assets/Search.svg" />
-        <div class="wrap-text">
-          <div class="text-h5">Brebes Adventure</div>
-          <div class="caption">Location Object Platform</div>
-        </div>
-      </div>
+      <HeaderAuth />
 
       <div class="row justify-around bg-primary wrap-switch__auth">
         <div
@@ -142,6 +136,51 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- Dialog Verify Email -->
+    <q-dialog v-model="verifyEmail" persistent position="bottom">
+      <q-card style="width: 350px">
+        <q-linear-progress :value="1" color="pink" />
+
+        <q-card-section>
+          <div class="text-h6 text-weight-bold text-primary">Verify Email!</div>
+          <div class="text-grey-7">Please input email for verify</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            type="email"
+            placeholder="Email"
+            color="primary"
+            v-model="form.email"
+            required
+            class="q-mt-md"
+            autofocus
+            @keyup.enter="onVerifyEmail"
+          >
+            <template v-slot:prepend>
+              <q-icon color="primary" name="email" />
+            </template>
+          </q-input>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn
+            flat
+            label="Cancel"
+            class="text-capitalize"
+            @click="onCancelForgot"
+          />
+          <q-btn
+            unelevated
+            label="Verify Email"
+            color="primary"
+            class="text-capitalize text-weight-bold"
+            @click="onVerifyEmail"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -150,8 +189,12 @@
   import { useStore } from "vuex";
   import { useQuasar, Notify, BottomSheet } from "quasar";
   import { useRouter, useRoute } from "vue-router";
+  import HeaderAuth from "../components/HeaderAuth.vue";
 
   export default defineComponent({
+    components: {
+      HeaderAuth,
+    },
     setup() {
       const store = useStore();
       const $q = useQuasar();
@@ -162,11 +205,12 @@
         isLogin: true,
         form: {
           name: "admin",
-          email: "syamsulspeedy@gmail.com",
+          email: "syamsulbisnis@gmail.com",
           password: "12345678",
         },
         isPwd: true,
         seamless: false,
+        verifyEmail: false,
       });
 
       const swithRegister = () => {
@@ -214,13 +258,13 @@
             console.log("res", res);
             if (res.success === false) {
               NotifyCreate("negative", res.message);
-              state.form.email = "";
               state.form.password = "";
               state.isPwd = false;
 
               $q.loading.hide();
-            } else if (res.user.created_at == null) {
+            } else if (res.user.email_verified_at == null) {
               NotifyCreate("negative", "Please verify email!");
+              state.verifyEmail = true;
 
               $q.loading.hide();
             } else if (res.access_token != null) {
@@ -249,7 +293,6 @@
           $q.loading.hide();
           state.seamless = false;
         } catch (error) {
-          console.log("catch: ", error.response);
           const resCatch = error.response;
           if (resCatch.status === 422) {
             NotifyCreate("negative", resCatch.data.errors.email[0]);
@@ -268,6 +311,26 @@
         state.form.password = "";
 
         state.seamless = false;
+        state.verifyEmail = false;
+      };
+
+      const onVerifyEmail = async () => {
+        $q.loading.show();
+
+        const reqVerify = await store.dispatch("auth/verify", state.form);
+        console.log(reqVerify);
+        const res = reqVerify;
+        if (res.status == 200) {
+          NotifyCreate("positive", res.data.status);
+          state.form.email = "";
+          state.verifyEmail = false;
+        } else {
+          NotifyCreate("positive", res.data.status);
+          state.form.email = "";
+          state.verifyEmail = false;
+        }
+
+        $q.loading.hide();
       };
 
       return {
@@ -277,23 +340,13 @@
         onLogin,
         onForgotPassword,
         onCancelForgot,
+        onVerifyEmail,
       };
     },
   });
 </script>
 
 <style lang="scss" scoped>
-  .logo-search {
-    width: 48px;
-    height: auto;
-    margin-right: 8px;
-  }
-
-  .wrap-header {
-    display: flex;
-    justify-content: center;
-    padding: 40px 0;
-  }
   .opacity-30 {
     opacity: 0.3;
     color: white;
