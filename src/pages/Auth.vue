@@ -255,7 +255,6 @@
           try {
             const response = await store.dispatch("auth/login", state.form);
             const res = response.data;
-            console.log("res", res);
             if (res.success === false) {
               NotifyCreate("negative", res.message);
               state.form.password = "";
@@ -270,6 +269,9 @@
             } else if (res.access_token != null) {
               NotifyCreate("positive", "Welcome back, " + res.user.name);
               router.replace({ name: "home" });
+              let resUser = { ...res.user };
+              store.state.auth.user = resUser;
+              console.log("res user auth: ", resUser);
 
               $q.loading.hide();
             }

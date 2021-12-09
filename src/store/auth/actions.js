@@ -113,3 +113,32 @@ export function verify (context, { email }) {
     return error.response;
   })
 }
+
+export function handleRefresh (context) {
+  const token = SessionStorage.getItem('auth');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `${token}`
+    }
+  }
+
+  const body = {
+    email: 'admin@adventure.id'
+  }
+  
+  return api.get("user",
+    body,
+    config
+  )
+  
+  .then(function(response) {
+
+    return response;
+  })
+  .catch(function(error){
+    console.log(error.response);
+
+    return error.response;
+  })
+}

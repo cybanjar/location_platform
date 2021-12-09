@@ -80,7 +80,7 @@
             <div class="wrap-img">
               <q-img
                 class="img-profile"
-                src="https://placeimg.com/300/300/people"
+                :src="`http://localhost:8000/storage/${getUser.photo_profile}`"
                 :ratio="1"
               >
                 <div class="absolute-bottom text-caption text-center">Edit</div>
@@ -88,17 +88,18 @@
             </div>
             <div class="bg-white q-mt-md">
               <div class="row justify-between q-pa-md">
-                <div class="col-6 q-gutter-sm">
+                <div class="col-4 q-gutter-sm">
                   <div>Nama</div>
-                  <div>Username</div>
+                  <div>Email</div>
                   <div>Verfication</div>
-                  <div>Change Password</div>
+                  <div>Password</div>
                 </div>
-                <div class="col-6 text-right q-gutter-sm">
-                  <div>Syamsul Amin <q-icon name="chevron_right" /></div>
-                  <div>syamsulamin <q-icon name="chevron_right" /></div>
+                <div class="col-8 text-right q-gutter-sm">
+                  <div>{{ getUser.name }} <q-icon name="chevron_right" /></div>
+                  <div>{{ getUser.email }} <q-icon name="chevron_right" /></div>
                   <div>
-                    27/09/2020 <q-icon name="check" class="text-positive" />
+                    {{ getUser.email_verified_at.substr(0, 10) }}
+                    <q-icon name="check" class="text-positive" />
                   </div>
                   <div>
                     <span>*********</span>
@@ -109,18 +110,28 @@
             </div>
             <div class="bg-white q-mt-md">
               <div class="row justify-between q-pa-md">
-                <div class="col-6 q-gutter-sm">
+                <div class="col-4 q-gutter-sm">
                   <div>Jenis Kelamin</div>
                   <div>Tanggal Lahir</div>
                   <div>No. Telp</div>
                   <div>Alamat</div>
                 </div>
-                <div class="col-6 text-right q-gutter-sm">
-                  <div>Syamsul Amin</div>
-                  <div>syamsulamin</div>
-                  <div>27/09/2020</div>
+                <div class="col-8 text-right q-gutter-sm">
                   <div>
-                    <span>Brebes</span>
+                    {{ (getUser.jk = null ? " " : getUser.jk) }}
+                  </div>
+                  <div>
+                    {{ (getUser.ttl = null ? " " : getUser.ttl) }}
+                  </div>
+                  <div>
+                    {{
+                      (getUser.phoneNumber = null ? " " : getUser.phoneNumber)
+                    }}
+                  </div>
+                  <div>
+                    <span>{{
+                      (getUser.address = null ? " " : getUser.address)
+                    }}</span>
                     <q-icon name="chevron_right" />
                   </div>
                 </div>
@@ -183,7 +194,7 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs, onMounted } from "vue";
+  import { defineComponent, reactive, toRefs, onMounted, computed } from "vue";
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
   import { api } from "boot/axios";
@@ -206,6 +217,7 @@
       const state = reactive({
         tab: "profile",
         search: "",
+        getUser: computed(() => store.state.auth.user),
       });
 
       const NotifyCreate = (type, mess) =>
@@ -214,16 +226,16 @@
           message: mess,
         });
 
-      function loadData() {
-        const getToken = SessionStorage.getItem("auth");
-        console.log("Token home:", getToken);
-
-        if (getToken == null) {
+      onMounted(async () => {
+        if (store.state.auth.token == null) {
           NotifyCreate("negative", "Please Login!");
           router.push({ path: "/auth" });
         }
-      }
-      loadData();
+
+        // const handleRefresh = await store.dispatch("auth/handleRefresh");
+        // console.log("handleRefresh", handleRefresh);
+        // const getUser = handleRefresh.data;
+      });
 
       const onLogout = async () => {
         $q.loading.show();
@@ -264,6 +276,7 @@
   .q-tab-panel {
     background-color: #fafafc;
     padding: 0;
+    margin-bottom: 60px;
   }
 
   .q-field--outlined .q-field__control {

@@ -1,3 +1,3 @@
-export function todos (state, getters) {
-  return getters.data;
+export function getUser (state, getters) {
+  return state.user;
 }

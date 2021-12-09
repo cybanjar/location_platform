@@ -4,6 +4,7 @@ export default function () {
   return {
     isAuth: false,
     credential: null,
-    token: SessionStorage.getItem("auth")
+    token: SessionStorage.getItem("auth"),
+    user: {}
   }
 }
