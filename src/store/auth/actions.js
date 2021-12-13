@@ -1,5 +1,6 @@
 import axios, { api } from 'boot/axios'
 import { Cookies, SessionStorage } from 'quasar';
+import { getUser } from './getters';
 
 export function register (context, { name, email, password }) {
   return api.post('register', {
@@ -122,18 +123,31 @@ export function handleRefresh (context) {
       'Authorization': `${token}`
     }
   }
-
-  const body = {
-    email: 'admin@adventure.id'
-  }
-  
   return api.get("user",
-    body,
     config
   )
   
   .then(function(response) {
+    return response;
+  })
+  .catch(function(error){
+    console.log(error.response);
 
+    return error.response;
+  })
+}
+
+export function updateProfile (context) {
+  const token = SessionStorage.getItem('auth');
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `${token}`
+    }
+  }
+
+  return api.post("user", config)
+  .then(function(response) {
     return response;
   })
   .catch(function(error){

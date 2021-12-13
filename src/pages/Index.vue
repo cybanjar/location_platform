@@ -78,10 +78,27 @@
           </q-toolbar>
           <div class="q-py-md">
             <div class="wrap-img">
+              <input
+                v-if="getUser['photo_profile'] == null"
+                type="file"
+                id="file"
+                ref="file"
+                @change="onChange"
+                name="file"
+              />
               <q-img
+                v-if="getUser['photo_profile'] != null"
                 class="img-profile"
-                :src="`http://localhost:8000/storage/${getUser.photo_profile}`"
+                id="file"
                 :ratio="1"
+                :src="`http://localhost:8000/storage/${getUser['photo_profile']}`"
+              >
+              </q-img>
+              <q-img
+                v-else
+                class="img-profile"
+                :ratio="1"
+                src="~/assets/icon_blank.jpeg"
               >
                 <div class="absolute-bottom text-caption text-center">Edit</div>
               </q-img>
@@ -95,10 +112,10 @@
                   <div>Password</div>
                 </div>
                 <div class="col-8 text-right q-gutter-sm">
-                  <div>{{ getUser.name }} <q-icon name="chevron_right" /></div>
-                  <div>{{ getUser.email }} <q-icon name="chevron_right" /></div>
+                  <div> {{ getUser['name'] }} <q-icon name="chevron_right" /></div>
+                  <div> {{ getUser['email'] }} <q-icon name="chevron_right" /></div>
                   <div>
-                    {{ getUser.email_verified_at.substr(0, 10) }}
+                    {{ getUser['email_verified_at'] }}
                     <q-icon name="check" class="text-positive" />
                   </div>
                   <div>
@@ -111,27 +128,36 @@
             <div class="bg-white q-mt-md">
               <div class="row justify-between q-pa-md">
                 <div class="col-4 q-gutter-sm">
+                  <q-toggle v-model="isLock" :label="isLock == false ? 'Locked' : 'Unlocked' "/>
                   <div>Jenis Kelamin</div>
                   <div>Tanggal Lahir</div>
                   <div>No. Telp</div>
                   <div>Alamat</div>
                 </div>
                 <div class="col-8 text-right q-gutter-sm">
+                  <q-btn @click="warningUpdate = true" flat round color="pink" icon="error" />
                   <div>
-                    {{ (getUser.jk = null ? " " : getUser.jk) }}
-                  </div>
-                  <div>
-                    {{ (getUser.ttl = null ? " " : getUser.ttl) }}
+                    {{
+                      (getUser['jk'] == null ? form.jk : getUser['jk']) 
+                    }}
+                    <q-icon name="chevron_right" />
                   </div>
                   <div>
                     {{
-                      (getUser.phoneNumber = null ? " " : getUser.phoneNumber)
+                     (getUser['ttl'] == null ? form.ttl : getUser['ttl']) 
                     }}
+                    <q-icon name="chevron_right" />
                   </div>
                   <div>
-                    <span>{{
-                      (getUser.address = null ? " " : getUser.address)
-                    }}</span>
+                    {{
+                      (getUser['phoneNumber'] == null ? form.phoneNumber : getUser['phoneNumber'])
+                    }}
+                    <q-icon name="chevron_right" />
+                  </div>
+                  <div>
+                    {{
+                      (getUser['address'] == null ? form.address : getUser['address'])
+                    }}
                     <q-icon name="chevron_right" />
                   </div>
                 </div>
@@ -144,11 +170,11 @@
                 class="full-width text-weight-bold q-py-sm text-capitalize"
                 label="Update Profile"
                 color="primary"
+                @click="onUpdateProfile"
               />
               <q-btn
                 flat
                 color="primary"
-                icon="logout"
                 class="full-width q-py-sm text-capitalize"
                 label="Logout"
                 @click="onLogout"
@@ -156,6 +182,74 @@
             </div>
           </div>
         </div>
+
+        <!-- Dialog Update Profile -->
+        <q-dialog v-model="isLock" persistent position="bottom">
+          <q-card style="width: 350px">
+            <q-linear-progress :value="1" color="pink" />
+
+            <q-card-section>
+              <div class="text-h6 text-weight-bold text-primary">Update Profile!</div>
+              <div class="text-grey-7">Please input data profile</div>
+            </q-card-section>
+            
+            <q-card-section class="q-pt-none">
+              <q-select v-if="getUser['jk'] == null" behavior="menu" dense v-model="form.jk" :options="optionsJK" label="Jenis Kelamin" />
+              
+              <q-input v-if="getUser['ttl'] == null" class="q-mt-md" dense name="event" ref="qDateProxy" v-model="form.ttl" mask="date" :rules="['date']">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                      <q-date v-model="form.ttl">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Submit" color="primary" flat />
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+
+              <q-input type="number" v-if="getUser['phoneNumber'] == null" dense v-model="form.phoneNumber" placeholder="Phone number" />
+
+              <q-input v-if="getUser['address'] == null" class="q-mt-md" dense v-model="form.address" placeholder="Address" />
+            </q-card-section>
+
+            <q-card-actions align="right" class="text-primary q-px-md">
+              <q-btn
+                flat
+                label="Cancel"
+                class="text-capitalize"
+                @click="onCancelDialogUpdate"
+              />
+              <q-btn
+                unelevated
+                label="Submit"
+                type="submit"
+                color="primary"
+                class="text-capitalize text-weight-bold"
+                @click="onDialogUpdate"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <!-- Dialog Warning Update -->
+        <q-dialog v-model="warningUpdate" transition-show="fade-in" transition-hide="fade-out">
+          <q-card style="width: 350px">
+            <q-card-section>
+              <div class="text-h6 text-weight-bold text-primary">Update Profile!</div>
+              <ul class="text-grey-7">
+                <li v-if="getUser['photo_profile'] == null">Upload Foto</li>
+                <li v-if="getUser['jk'] == null">Jenis Kelamin</li>
+                <li v-if="getUser['ttl'] == null">Tanggal Lahir</li>
+                <li v-if="getUser['phoneNumber'] == null">Nomer HP</li>
+                <li v-if="getUser['address'] == null">Alamat</li>
+              </ul>
+              <p>Jika ada masalah silahkan <a href="mailto:cybanjar@gmail.com">email</a></p>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </q-tab-panel>
     </q-tab-panels>
 
@@ -194,7 +288,7 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs, onMounted, computed } from "vue";
+  import { defineComponent, reactive, toRefs, onMounted, computed, onBeforeMount } from "vue";
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
   import { api } from "boot/axios";
@@ -202,6 +296,7 @@
   import { useRouter, useRoute } from "vue-router";
   import { useStore } from "vuex";
   import { route } from "quasar/wrappers";
+  import axios from 'axios';
 
   export default defineComponent({
     name: "PageIndex",
@@ -217,7 +312,20 @@
       const state = reactive({
         tab: "profile",
         search: "",
-        getUser: computed(() => store.state.auth.user),
+        // getUser: computed(() => store.state.auth.user),
+        getUser: {},
+        form: {
+          file: '',
+          jk: '',
+          ttl: null,
+          phoneNumber: '',
+          address: ''
+        },
+        isLock: false,
+        optionsJK: [
+          'Laki-laki', 'Perempuan'
+        ],
+        warningUpdate: false,
       });
 
       const NotifyCreate = (type, mess) =>
@@ -227,15 +335,17 @@
         });
 
       onMounted(async () => {
-        if (store.state.auth.token == null) {
-          NotifyCreate("negative", "Please Login!");
-          router.push({ path: "/auth" });
-        }
+        $q.loading.show()
 
-        // const handleRefresh = await store.dispatch("auth/handleRefresh");
-        // console.log("handleRefresh", handleRefresh);
-        // const getUser = handleRefresh.data;
-      });
+        const handleRefresh = await store.dispatch("auth/handleRefresh");
+        if(handleRefresh.status == 401) {
+          router.replace({name: 'auth'})
+        }
+        console.log("handleRefresh", handleRefresh);
+        state.getUser = handleRefresh.data;
+
+        $q.loading.hide()
+      })
 
       const onLogout = async () => {
         $q.loading.show();
@@ -249,13 +359,64 @@
         } else {
           $q.loading.hide();
         }
-
         $q.loading.hide();
       };
+
+      const onChange = (e) => {
+        // state.imgPreview = URL.createObjectURL(e.target.files[0]);
+        state.form.file = e.target.files[0];
+      };
+
+      const onUpdateProfile = async (e) => {
+        e.preventDefault();
+        let existingObj = state;
+        
+        const token = SessionStorage.getItem('auth');
+        const config = {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        let data = new FormData();
+        data.append("photo_profile", state.form.file);
+        data.append("jk", state.form.jk);
+        data.append("ttl", state.form.ttl);
+        data.append("phoneNumber", state.form.phoneNumber);
+        data.append("address", state.form.address);
+        
+        await axios
+          .post('http://localhost:8000/api/user', data, config)
+          .then((response) => {
+            console.log('response', response);
+            existingObj.success = response.data.success;
+            window.location.reload();
+          })
+          .catch((error) => {
+            existingObj.output = error;
+          });
+      };
+
+      const onDialogUpdate = () => {
+        state.isLock = false;
+      }
+
+      const onCancelDialogUpdate = () => {
+        state.isLock = false;
+
+        state.form.jk = ''
+        state.form.ttl = null
+        state.form.phoneNumber = ''
+        state.form.address = ''
+      }
 
       return {
         ...toRefs(state),
         onLogout,
+        onChange,
+        onUpdateProfile,
+        onDialogUpdate,
+        onCancelDialogUpdate
       };
     },
   });
@@ -291,6 +452,7 @@
   .wrap-img {
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .q-img__content > div {

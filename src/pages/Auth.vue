@@ -187,7 +187,7 @@
 <script>
   import { defineComponent, reactive, toRefs } from "vue";
   import { useStore } from "vuex";
-  import { useQuasar, Notify, BottomSheet } from "quasar";
+  import { useQuasar, Notify, BottomSheet, SessionStorage } from "quasar";
   import { useRouter, useRoute } from "vue-router";
   import HeaderAuth from "../components/HeaderAuth.vue";
 
@@ -269,14 +269,10 @@
             } else if (res.access_token != null) {
               NotifyCreate("positive", "Welcome back, " + res.user.name);
               router.replace({ name: "home" });
-              let resUser = { ...res.user };
-              store.state.auth.user = resUser;
-              console.log("res user auth: ", resUser);
 
               $q.loading.hide();
             }
           } catch (error) {
-            // console.log("catch", error.response);
             $q.loading.hide();
           }
         }
@@ -320,7 +316,6 @@
         $q.loading.show();
 
         const reqVerify = await store.dispatch("auth/verify", state.form);
-        console.log(reqVerify);
         const res = reqVerify;
         if (res.status == 200) {
           NotifyCreate("positive", res.data.status);
