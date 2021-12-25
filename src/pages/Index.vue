@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-tab-panels v-model="tab">
+    <q-tab-panels class="q-mb-xl" v-model="tab">
       <!-- panel home -->
       <q-tab-panel class="window-height" name="home">
         <div>
@@ -15,33 +15,32 @@
           <q-scroll-area class="q-mx-md" style="height: 36px; max-width: 100vw">
             <div class="row no-wrap">
               <q-btn
-                v-for="index in 7"
+                v-for="(item, index) in category"
                 :key="index"
                 class="text-capitalize q-mr-xs"
                 unelevated
                 rounded
                 color="primary"
                 text-color="white"
-                label="Hutan"
+                :label="item['name']"
               />
             </div>
           </q-scroll-area>
-
-          <div class="q-mt-md" v-for="index in 7" :key="index">
+          <!-- <div>{{ dataHome }}</div> -->
+          <div class="q-mt-md" v-for="(item, index) in dataHome" :key="index">
             <q-card square flat>
-              <img src="https://placeimg.com/300/300/people" />
+              <img 
+                :src="`http://localhost:8000/storage/${item['image']}`" />
               <q-card-section>
-                <div class="text-h6 text-weight-bold">Hutan Mangrove</div>
-                <div class="text-subtitle2 text-grey-5">John Doe</div>
-                <!-- <q-btn flat dense round color="negative" icon="favorite" />
-                <span class="text-grey-5"> 2k</span> -->
+                <div class="text-h6 text-weight-bold">{{ item['locationName'] }}</div>
+                <div class="text-subtitle2 text-grey-5">{{ item['user_id'] }}</div>
               </q-card-section>
             </q-card>
           </div>
         </div>
       </q-tab-panel>
 
-      <!-- panel explore -->
+      <!-- Tab explore -->
       <q-tab-panel name="explore">
         <div class="q-pa-md">
           <div class="text-h5 q-mt-md">
@@ -68,7 +67,7 @@
         <ImageMix />
       </q-tab-panel>
 
-      <!-- panel profile -->
+      <!-- Tab profile -->
       <q-tab-panel name="profile">
         <div>
           <q-toolbar class="bg-white text-primary">
@@ -109,7 +108,6 @@
                   <div>Nama</div>
                   <div>Email</div>
                   <div>Verfication</div>
-                  <div>Password</div>
                 </div>
                 <div class="col-8 text-right q-gutter-sm">
                   <div> {{ getUser['name'] }} <q-icon name="chevron_right" /></div>
@@ -117,10 +115,6 @@
                   <div>
                     {{ getUser['email_verified_at'] }}
                     <q-icon name="check" class="text-positive" />
-                  </div>
-                  <div>
-                    <span>*********</span>
-                    <q-icon name="chevron_right" />
                   </div>
                 </div>
               </div>
@@ -170,6 +164,7 @@
                 class="full-width text-weight-bold q-py-sm text-capitalize"
                 label="Update Profile"
                 color="primary"
+                :disable="form.jk && form.phoneNumber && form.ttl && form.address && form.file === '' "
                 @click="onUpdateProfile"
               />
               <q-btn
@@ -185,7 +180,7 @@
 
         <!-- Dialog Update Profile -->
         <q-dialog v-model="isLock" persistent position="bottom">
-          <q-card style="width: 350px">
+          <q-card style="width: 573px">
             <q-linear-progress :value="1" color="pink" />
 
             <q-card-section>
@@ -193,44 +188,47 @@
               <div class="text-grey-7">Please input data profile</div>
             </q-card-section>
             
-            <q-card-section class="q-pt-none">
-              <q-select v-if="getUser['jk'] == null" behavior="menu" dense v-model="form.jk" :options="optionsJK" label="Jenis Kelamin" />
-              
-              <q-input v-if="getUser['ttl'] == null" class="q-mt-md" dense name="event" ref="qDateProxy" v-model="form.ttl" mask="date" :rules="['date']">
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
-                      <q-date v-model="form.ttl">
-                        <div class="row items-center justify-end">
-                          <q-btn v-close-popup label="Submit" color="primary" flat />
-                        </div>
-                      </q-date>
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
+            <form @submit.prevent="onDialogUpdate">
+              <q-card-section class="q-pt-none">
+                <q-select v-if="getUser['jk'] == null" behavior="menu" dense v-model="form.jk" :options="optionsJK" label="Jenis Kelamin" />
+                
+                <q-input v-if="getUser['ttl'] == null" class="q-mt-md" dense name="event" ref="qDateProxy" v-model="form.ttl" mask="date" :rules="['date']">
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy ref="qDateProxy" cover transition-show="scale" transition-hide="scale">
+                        <q-date v-model="form.ttl">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Submit" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
 
-              <q-input type="number" v-if="getUser['phoneNumber'] == null" dense v-model="form.phoneNumber" placeholder="Phone number" />
+                <q-input type="number" v-if="getUser['phoneNumber'] == null" dense v-model="form.phoneNumber" placeholder="62xxx" />
 
-              <q-input v-if="getUser['address'] == null" class="q-mt-md" dense v-model="form.address" placeholder="Address" />
-            </q-card-section>
+                <q-input v-if="getUser['address'] == null" class="q-mt-md" dense v-model="form.address" placeholder="Ex: Brebes" />
+              </q-card-section>
 
-            <q-card-actions align="right" class="text-primary q-px-md">
-              <q-btn
-                flat
-                label="Cancel"
-                class="text-capitalize"
-                @click="onCancelDialogUpdate"
-              />
-              <q-btn
-                unelevated
-                label="Submit"
-                type="submit"
-                color="primary"
-                class="text-capitalize text-weight-bold"
-                @click="onDialogUpdate"
-              />
-            </q-card-actions>
+              <q-card-actions align="right" class="text-primary q-px-md">
+                <q-btn
+                  flat
+                  label="Cancel"
+                  class="text-capitalize"
+                  @click="onCancelDialogUpdate"
+                />
+                <q-btn
+                  unelevated
+                  label="Submit"
+                  type="submit"
+                  color="primary"
+                  class="text-capitalize text-weight-bold"
+                  @click="onDialogUpdate"
+                  :disable="form.jk && form.phoneNumber && form.ttl && form.address === '' "
+                />
+              </q-card-actions>
+            </form>
           </q-card>
         </q-dialog>
 
@@ -255,6 +253,7 @@
 
     <div class="bottom-nav">
       <q-tabs
+        dense
         v-model="tab"
         indicator-color="transparent"
         active-color="primary"
@@ -288,7 +287,7 @@
 </template>
 
 <script>
-  import { defineComponent, reactive, toRefs, onMounted, computed, onBeforeMount } from "vue";
+  import { defineComponent, reactive, toRefs, onMounted, computed, watchEffect } from "vue";
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
   import { api } from "boot/axios";
@@ -310,7 +309,7 @@
       const $q = useQuasar();
 
       const state = reactive({
-        tab: "profile",
+        tab: "home",
         search: "",
         // getUser: computed(() => store.state.auth.user),
         getUser: {},
@@ -326,6 +325,10 @@
           'Laki-laki', 'Perempuan'
         ],
         warningUpdate: false,
+        isValid: false,
+        isDataUpdate: null,
+        category: [],
+        dataHome: []
       });
 
       const NotifyCreate = (type, mess) =>
@@ -333,20 +336,44 @@
           type: type,
           message: mess,
         });
-
-      onMounted(async () => {
+      
+      const getUser = async () => {
         $q.loading.show()
 
         const handleRefresh = await store.dispatch("auth/handleRefresh");
-        if(handleRefresh.status == 401) {
+        if(handleRefresh.status == 401 || handleRefresh.status == 500) {
           router.replace({name: 'auth'})
         }
-        console.log("handleRefresh", handleRefresh);
         state.getUser = handleRefresh.data;
 
         $q.loading.hide()
-      })
+      }
 
+      const getCategories = async () => {
+        $q.loading.show()
+
+        let handleCategories = await store.dispatch("auth/handleCategories");
+        state.category = handleCategories.data.data;
+
+        $q.loading.hide()
+      }
+
+      const getDataHome = async () => {
+        $q.loading.show()
+
+        let handleDataHome = await store.dispatch("auth/handleDataHome");
+        state.dataHome = handleDataHome.data.data.data;
+        console.log(handleDataHome.data.data.data);
+
+        $q.loading.hide()
+      }
+
+      onMounted(() => {
+        getUser();
+        getCategories();
+        getDataHome();
+      })
+      
       const onLogout = async () => {
         $q.loading.show();
 
@@ -388,7 +415,6 @@
         await axios
           .post('http://localhost:8000/api/user', data, config)
           .then((response) => {
-            console.log('response', response);
             existingObj.success = response.data.success;
             window.location.reload();
           })
@@ -416,7 +442,7 @@
         onChange,
         onUpdateProfile,
         onDialogUpdate,
-        onCancelDialogUpdate
+        onCancelDialogUpdate,
       };
     },
   });

@@ -25,7 +25,7 @@ export default route(function ({ store }/* ssrContext */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE)
   })
-  console.log(store.state.auth.token);
+  // console.log(store.state.auth.token);
 
   // Router.beforeEach((to, from, next) => {
   //   if (store.state.auth.token == null) {

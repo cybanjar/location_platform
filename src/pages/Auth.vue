@@ -206,7 +206,7 @@
         form: {
           name: "admin",
           email: "syamsulbisnis@gmail.com",
-          password: "12345678",
+          password: "123456789",
         },
         isPwd: true,
         seamless: false,
@@ -261,7 +261,7 @@
               state.isPwd = false;
 
               $q.loading.hide();
-            } else if (res.user.email_verified_at == null) {
+            } else if (res.user.email_verified_at === null) {
               NotifyCreate("negative", "Please verify email!");
               state.verifyEmail = true;
 

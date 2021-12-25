@@ -67,7 +67,7 @@ export function revokeToken (context) {
     return response;
   })
   .catch(function(error){
-    console.log(error.response);
+    // console.log(error.response);
 
     return error.response;
   })
@@ -104,12 +104,12 @@ export function verify (context, { email }) {
     config
   })
   .then(function(response) {
-    console.log('response action: ', response);
+    // console.log('response action: ', response);
     
     return response;
   })
   .catch(function(error){
-    console.log(error.response);
+    // console.log(error.response);
 
     return error.response;
   })
@@ -131,7 +131,7 @@ export function handleRefresh (context) {
     return response;
   })
   .catch(function(error){
-    console.log(error.response);
+    // console.log(error.response);
 
     return error.response;
   })
@@ -151,7 +151,51 @@ export function updateProfile (context) {
     return response;
   })
   .catch(function(error){
-    console.log(error.response);
+    // console.log(error.response);
+
+    return error.response;
+  })
+}
+
+export function handleCategories (context) {
+  const token = SessionStorage.getItem('auth');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `${token}`
+    }
+  }
+  return api.get("category",
+    config
+  )
+  
+  .then(function(response) {
+    return response;
+  })
+  .catch(function(error){
+    // console.log(error.response);
+
+    return error.response;
+  })
+}
+
+export function handleDataHome (context) {
+  const token = SessionStorage.getItem('auth');
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `${token}`
+    }
+  }
+  return api.get("post-home",
+    config
+  )
+  
+  .then(function(response) {
+    return response;
+  })
+  .catch(function(error){
+    // console.log(error.response);
 
     return error.response;
   })
