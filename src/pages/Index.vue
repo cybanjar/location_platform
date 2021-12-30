@@ -33,7 +33,7 @@
                 :src="`http://localhost:8000/storage/${item['image']}`" />
               <q-card-section>
                 <div class="text-h6 text-weight-bold">{{ item['locationName'] }}</div>
-                <div class="text-subtitle2 text-grey-5">{{ item['user_id'] }}</div>
+                <div class="text-subtitle2 text-grey-5">{{ item['user']['name'] }}</div>
               </q-card-section>
             </q-card>
           </div>
