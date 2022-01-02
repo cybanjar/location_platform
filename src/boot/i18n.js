@@ -8,6 +8,9 @@ export default boot(({ app }) => {
     messages
   })
 
+  const language = i18n.global.locale
+  console.info(language);
+
   // Set i18n instance on app
   app.use(i18n)
 })

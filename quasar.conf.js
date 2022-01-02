@@ -5,7 +5,7 @@
 
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
-
+const path = require('path');
 const { configure } = require('quasar/wrappers');
 
 module.exports = configure(function (ctx) {
@@ -75,7 +75,7 @@ module.exports = configure(function (ctx) {
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -88,11 +88,11 @@ module.exports = configure(function (ctx) {
         loading: {
           spinner: 'QSpinnerDots',
           spinnerColor: 'primary'
-        }
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -103,7 +103,7 @@ module.exports = configure(function (ctx) {
 
       // Quasar plugins
       plugins: [
-        'Notify', 'Loading', 'Cookies', 'SessionStorage', 'BottomSheet'
+        'Notify', 'Loading', 'Cookies', 'SessionStorage', 'BottomSheet', 'Dialog'
       ]
     },
 

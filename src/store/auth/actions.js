@@ -11,13 +11,6 @@ export function register (context, { name, email, password }) {
   .then(function(response) {
     return response;
   })
-  // .catch(function(error) {
-  //   return error;
-  //   // const err = error.response;
-  //   // if(err.data.success === false) {
-  //   //   return error;
-  //   // }
-  // })
 }
 
 export function login (context, { email, password }) {
@@ -104,12 +97,10 @@ export function verify (context, { email }) {
     config
   })
   .then(function(response) {
-    // console.log('response action: ', response);
     
     return response;
   })
   .catch(function(error){
-    // console.log(error.response);
 
     return error.response;
   })
@@ -131,7 +122,6 @@ export function handleRefresh (context) {
     return response;
   })
   .catch(function(error){
-    // console.log(error.response);
 
     return error.response;
   })
@@ -151,7 +141,6 @@ export function updateProfile (context) {
     return response;
   })
   .catch(function(error){
-    // console.log(error.response);
 
     return error.response;
   })
@@ -173,7 +162,6 @@ export function handleCategories (context) {
     return response;
   })
   .catch(function(error){
-    // console.log(error.response);
 
     return error.response;
   })
@@ -195,7 +183,6 @@ export function handleDataHome (context) {
     return response;
   })
   .catch(function(error){
-    // console.log(error.response);
 
     return error.response;
   })

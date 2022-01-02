@@ -205,8 +205,8 @@
         isLogin: true,
         form: {
           name: "admin",
-          email: "syamsulbisnis@gmail.com",
-          password: "123456789",
+          email: "syamsulspeedy@gmail.com",
+          password: "12345678",
         },
         isPwd: true,
         seamless: false,

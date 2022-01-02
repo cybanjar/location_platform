@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 const baseURL = "http://localhost:8000/api/";
+const baseStorage = "http://localhost:8000/storage/"
 // const baseURL = "https://api.akusaralawoffice.com/api_pelayanan/api/";
 
 export default {
     baseUrl: baseURL,
+    baseStorage: baseStorage,
     doFetch: async (url, body, headers) => {
         let reqBody = null;
         const token = sessionStorage.getItem("token");

@@ -3,5 +3,10 @@
 
 export default {
   failed: 'Action failed',
-  success: 'Action was successful'
+  success: 'Action was successful',
+  page: {
+    blong: 'Oops. Nothing here...'
+  },
+  name: 'Name',
+  profile: 'Profile',
 }

@@ -10,6 +10,15 @@ const routes = [
       { path: '/reset-password', name: 'reset-password', component: () => import('src/pages/ResetPassword.vue')},
     ]
   },
+  {
+    path: '/dashboard',
+    redirect: '/dashboard/profile',
+    component: () => import('layouts/CMS.vue'),
+    children: [
+      { path: '/dashboard/profile', name: 'profile', component: () => import('src/pages/CMS/Profile.vue') },
+      { path: '/dashboard/post-home', name: 'posthome', component: () => import('src/pages/CMS/PostsHome.vue') },
+    ]
+  },
 
   // Always leave this as last one,
   // but you can also remove it

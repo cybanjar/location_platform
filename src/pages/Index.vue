@@ -30,7 +30,7 @@
           <div class="q-mt-md" v-for="(item, index) in dataHome" :key="index">
             <q-card square flat>
               <img 
-                :src="`http://localhost:8000/storage/${item['image']}`" />
+                :src="`${api.baseStorage}${item['image']}`" />
               <q-card-section>
                 <div class="text-h6 text-weight-bold">{{ item['locationName'] }}</div>
                 <div class="text-subtitle2 text-grey-5">{{ item['user']['name'] }}</div>
@@ -71,11 +71,28 @@
       <q-tab-panel name="profile">
         <div>
           <q-toolbar class="bg-white text-primary">
+            <q-btn class="text-capitalize text-weight-bold" :label="$t('profile')" flat dense />
             <q-toolbar-title class="text-center text-weight-bold">
-              Profile
+              <!-- Profile -->
             </q-toolbar-title>
+            <q-select
+              v-model="locale"
+              :options="localeOptions"
+              behavior="menu"
+              standout
+              dense
+              borderless
+              emit-value
+              map-options
+              options-dense
+            >
+              <template v-slot:append>
+                <q-icon name="language" color="primary" />
+              </template>
+            </q-select>
           </q-toolbar>
           <div class="q-py-md">
+            <!-- <div class="text-center text-weight-bold q-pb-sm">Profile</div> -->
             <div class="wrap-img">
               <input
                 v-if="getUser['photo_profile'] == null"
@@ -90,7 +107,7 @@
                 class="img-profile"
                 id="file"
                 :ratio="1"
-                :src="`http://localhost:8000/storage/${getUser['photo_profile']}`"
+                :src="`${api.baseStorage}/${getUser['photo_profile']}`"
               >
               </q-img>
               <q-img
@@ -105,7 +122,7 @@
             <div class="bg-white q-mt-md">
               <div class="row justify-between q-pa-md">
                 <div class="col-4 q-gutter-sm">
-                  <div>Nama</div>
+                  <div>{{ $t('name') }}</div>
                   <div>Email</div>
                   <div>Verfication</div>
                 </div>
@@ -290,12 +307,12 @@
   import { defineComponent, reactive, toRefs, onMounted, computed, watchEffect } from "vue";
   import ImagePost from "../components/ImagePost.vue";
   import ImageMix from "../components/ImageMix.vue";
-  import { api } from "boot/axios";
   import { Notify, SessionStorage, useQuasar } from "quasar";
   import { useRouter, useRoute } from "vue-router";
   import { useStore } from "vuex";
-  import { route } from "quasar/wrappers";
   import axios from 'axios';
+  import api from 'src/api/fetch.api'
+  import { useI18n } from 'vue-i18n'
 
   export default defineComponent({
     name: "PageIndex",
@@ -307,11 +324,11 @@
       const router = useRouter();
       const store = useStore();
       const $q = useQuasar();
+      const { locale } = useI18n({ useScope: 'global' })
 
       const state = reactive({
-        tab: "home",
+        tab: "profile",
         search: "",
-        // getUser: computed(() => store.state.auth.user),
         getUser: {},
         form: {
           file: '',
@@ -363,7 +380,6 @@
 
         let handleDataHome = await store.dispatch("auth/handleDataHome");
         state.dataHome = handleDataHome.data.data.data;
-        console.log(handleDataHome.data.data.data);
 
         $q.loading.hide()
       }
@@ -413,7 +429,7 @@
         data.append("address", state.form.address);
         
         await axios
-          .post('http://localhost:8000/api/user', data, config)
+          .post(`${api.baseUrl}user`, data, config)
           .then((response) => {
             existingObj.success = response.data.success;
             window.location.reload();
@@ -443,6 +459,12 @@
         onUpdateProfile,
         onDialogUpdate,
         onCancelDialogUpdate,
+        api,
+        locale,
+        localeOptions: [
+          { value: 'en-US', label: 'EN' },
+          { value: 'id', label: 'ID' }
+        ],
       };
     },
   });
